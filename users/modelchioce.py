@@ -1,11 +1,11 @@
 PRIORITY_CHOICE = (
     ('low','LOW'),
-    ('median','Median'),
+    ('medium','Medium'),
     ('high','High'),
 )
 
 RESOLVE_CHOICE = (
-    ('pending','Pending'),
+    ('open','Open'),
     ('in_progress','In-progress'),
     ('review','Review'),
     ('cancelled','Cancelled'),

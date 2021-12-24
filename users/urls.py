@@ -22,5 +22,6 @@ urlpatterns = [
     path('api/employee/<int:pk>', EmployeeViewGetByID.as_view(), name="getAllemployeebyid"),
     path('api/students/', StudentView.as_view(), name="getStudents"),
     path('api/students/<int:pk>', StudentViewGetByID.as_view(), name="getStudentsbyid"),
+    path('api/dashboard_data/', DashboardView.as_view(), name="DashboardView"),
 
 ]

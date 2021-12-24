@@ -4,8 +4,8 @@ from rest_framework.exceptions import ValidationError
 
 SECRET_KEY = 'django-insecure-d2mwzt4-ley&odhigwg24@h+!61!l0((b+y4@eqbzg1+(ukh-r'
 JWT_ALGORITHM = 'HS256'
-JWT_EXP_REFRESH_HOURS = timedelta(hours=1)
-JWT_EXP_ACCESS_MINUTES = timedelta(minutes=20)
+JWT_EXP_REFRESH_HOURS = timedelta(days=3)
+JWT_EXP_ACCESS_MINUTES = timedelta(days=1)
 
 
 def get_access_token(account):

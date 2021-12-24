@@ -83,7 +83,9 @@ class TicketCreateView(APIView):
                 title = payload['title'],
                 description = payload['description'],
                 initiator_id = payload['initiator'],
-                priroty = payload['priroty']
+                priority = payload['priority'],
+                request_type = payload['request_type'],
+
             )
             return Response(data={"success":True,"message":"Ticket create successfull!","inserted_id" : create.id},status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -102,11 +104,10 @@ class TicketUpdateView(APIView):
                 title = payload['title'],
                 description = payload['description'],
                 initiator_id = payload['initiator'],
-                priroty = payload['priroty'],
+                priority = payload['priority'],
+                request_type = payload['request_type'] if 'request_type' in payload else ticket.values().first().get('request_type'),
                 assigne_id = payload['assigne'] if 'assigne' in payload else ticket.values().first().get('assigne_id'),
                 resolve_status = payload['resolve_status'] if 'resolve_status' in payload else ticket.values().first().get('resolve_status'),
-                updated_date =  current_datetime,
-                updated_by_id =  request.user['user_id']
             )
             return Response({'message': 'Ticket updated'},status=status.HTTP_200_OK)
         else:
@@ -239,3 +240,10 @@ class StudentViewGetByID(APIView):
     def get(self, request, pk):
         student = CustomUser.objects.filter(pk=pk,user_type='student').values().first()
         return Response(data=student, status=status.HTTP_200_OK)
+
+class DashboardView(APIView):
+
+    @validate_access_token
+    def get(self, request):
+        data = Ticket.objects.all().values()
+        return Response(data=data, status=status.HTTP_200_OK)
