@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-d2mwzt4-ley&odhigwg24@h+!61!l0((b+y4@eqbzg1+(ukh-r
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding','x-clinet','x-request-header',
                       'content-type', 'accept', 'origin', 'authorization','no-auth')
 # Application definition
@@ -118,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
 #     "http://127.0.0.1:8080/",
 # ]
 
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = ["*"]
 
 # Internationalization

@@ -11,7 +11,7 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      RetrieveUpdateAPIView, UpdateAPIView)
 from django.contrib.auth.models import Group, Permission
-current_datetime = datetime.datetime.now()  
+
 class SignUpView(APIView):
 
     def post(self, request):
@@ -46,7 +46,8 @@ class LoginView(APIView):
                 'email': user.email,
                 'user_type': user.user_type,
                 'refresh_token': refresh_token,
-                'access_token': access_token
+                'access_token': access_token,
+                'user_id': user.id,
             }
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -82,7 +83,7 @@ class TicketCreateView(APIView):
             create  = Ticket.objects.create(
                 title = payload['title'],
                 description = payload['description'],
-                initiator_id = payload['initiator'],
+                initiator_id = request.user['user_id'],
                 priority = payload['priority'],
                 request_type = payload['request_type'],
 
@@ -98,20 +99,23 @@ class TicketUpdateView(APIView):
     @validate_access_token
     def put(self, request, pk):
         payload = request.data
+        print(request.user)
         ticket  =  Ticket.objects.filter(pk=pk)
         if ticket.exists():
             update = ticket.update(
-                title = payload['title'],
-                description = payload['description'],
-                initiator_id = payload['initiator'],
-                priority = payload['priority'],
-                request_type = payload['request_type'] if 'request_type' in payload else ticket.values().first().get('request_type'),
-                assigne_id = payload['assigne'] if 'assigne' in payload else ticket.values().first().get('assigne_id'),
-                resolve_status = payload['resolve_status'] if 'resolve_status' in payload else ticket.values().first().get('resolve_status'),
+                **payload,
+                updated_date =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                updated_by_id = request.user['user_id']
+                # title = payload['title'],
+                # description = payload['description'],
+                # priority = payload['priority'],
+                # request_type = payload['request_type'] if 'request_type' in payload else ticket.values().first().get('request_type'),
+                # assigne_id = payload['assigne'] if 'assigne' in payload else ticket.values().first().get('assigne_id'),
+                # resolve_status = payload['resolve_status'] if 'resolve_status' in payload else ticket.values().first().get('resolve_status'),
             )
-            return Response({'message': 'Ticket updated'},status=status.HTTP_200_OK)
+            return Response({'msg': 'Ticket updated'},status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Ticket not found, Updating failed!'},status=status.HTTP_200_OK)
+            return Response({'msg': 'Ticket not found, Updating failed!'},status=status.HTTP_200_OK)
 
 
 class TicketListView(APIView):
@@ -119,10 +123,21 @@ class TicketListView(APIView):
     @validate_access_token
     def get(self,request):
         products = Ticket.objects.all().values()
-        
+
+        result = []
+
+        for item in products:
+            try:
+                item['assigne_name'] =  CustomUser.objects.get(pk=item['assigne_id']).name
+                item['initiator_name'] =  CustomUser.objects.get(pk=item['initiator_id']).name
+            except Exception as e:
+                item['assigne_name'] =  None
+                item['initiator_name'] = None
+
+            result.append(item)
         # serializered = TickerSerializer(instance=products, many=True)
         # print("print::",serializered.data)
-        return Response(data=products, status=status.HTTP_200_OK)
+        return Response(data=result, status=status.HTTP_200_OK)
         # return Response({'error': "No products found."}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -138,7 +153,6 @@ class PermissionList(ListAPIView):
     serializer_class = PermissionSerializer
     queryset = Permission.objects.all()
     pagination_class = None
-
 
 class RoleListView(ListAPIView):
     serializer_class = RoleSerializer

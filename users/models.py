@@ -86,7 +86,7 @@ class Ticket(models.Model):
     assigne = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True,blank=True,related_name='assigne_for_ticket')
     priority = models.CharField(choices=PRIORITY_CHOICE,max_length=50,default='medium')
     request_type = models.CharField(max_length=50,default='',null=True)
-    resolve_status = models.CharField(choices=RESOLVE_CHOICE,max_length=50,default='pending',null=True)
+    resolve_status = models.CharField(choices=RESOLVE_CHOICE,max_length=50,default='open',null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     updated_by =  models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True,blank=True,related_name='updated_by')
