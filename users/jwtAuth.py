@@ -8,10 +8,11 @@ JWT_EXP_REFRESH_HOURS = timedelta(days=3)
 JWT_EXP_ACCESS_MINUTES = timedelta(days=1)
 
 
-def get_access_token(account):
+def get_access_token(user):
     payload = {
         'token_type': 'access',
-        'user_id': str(account.id),
+        'user_id': str(user.id),
+        'user_type' : str(user.user_type),
         'exp': datetime.utcnow() + JWT_EXP_ACCESS_MINUTES
     }
     jwt_access_token = jwt.encode(payload, SECRET_KEY, JWT_ALGORITHM)

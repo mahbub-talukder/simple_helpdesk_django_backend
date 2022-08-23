@@ -40,6 +40,7 @@ class LoginView(APIView):
                 refresh_token=refresh_token
             )
             tokenModel.save()
+            role = RoleSerializer(Group.objects.filter(name=user.user_type).first()).data
             response = {
                 'name': user.name,
                 'mobile': user.mobile,
@@ -48,6 +49,8 @@ class LoginView(APIView):
                 'refresh_token': refresh_token,
                 'access_token': access_token,
                 'user_id': user.id,
+                'permissions' :  role['permissions'],
+                'role_name' :  role['name']
             }
             return Response(response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -150,19 +153,32 @@ class TicketDetailView(APIView):
 
 
 class PermissionList(ListAPIView):
+    
     serializer_class = PermissionSerializer
     queryset = Permission.objects.all()
     pagination_class = None
+    @validate_access_token
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 class RoleListView(ListAPIView):
     serializer_class = RoleSerializer
     queryset = Group.objects.all()
     pagination_class = None
+    
+    @validate_access_token
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 
 class RoleCreateView(CreateAPIView):
     serializer_class = RoleSerializer
     queryset = Group.objects.all()
+
+    @validate_access_token
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
 
 class EmployeeView(APIView):
 
@@ -253,7 +269,11 @@ class StudentViewGetByID(APIView):
     @validate_access_token
     def get(self, request, pk):
         student = CustomUser.objects.filter(pk=pk,user_type='student').values().first()
-        return Response(data=student, status=status.HTTP_200_OK)
+        if student:
+            return Response(data=student, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'message' : 'Student not found'}, status=status.HTTP_200_OK)
+
 
 class DashboardView(APIView):
 

@@ -11,46 +11,21 @@ from import_export.admin import ImportExportModelAdmin
 
 from .models import CustomUser
 
+class UsersResource(resources.ModelResource):
+    class Meta:
+        model = CustomUser
 
-# @admin.register(CustomUser)
-# class UserAdmin(ImportExportModelAdmin, BaseUserAdmin):
 
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         return qs
+class UserAdmin(admin.ModelAdmin):
+    resource_class = UsersResource
 
-#     ordering = ['id']
-#     list_display = ['id', 'name', 'email', 'mobile']
-#     search_fields = ['name', 'email', 'mobile']
+    ordering = ['id']
+    list_display = ['id', 'name', 'email', 'mobile']
+    search_fields = ['name', 'email', 'mobile']
+    readonly_fields = ['password']
 
-#     fieldsets = (
-#         (None, {'fields': ('email', 'password')}),
-#         (_('Personal Info'), {'fields': ('name',
-#                                          'mobile',
-                                     
-#                                          )}),
-#         (
-#             _('Permissions'),
-#             {
-#                 'fields': (
-#                     'is_active',
-#                     'is_staff',
-#                     'is_superuser'
-#                 )
-#             }
-#         ),
-#         (_('Important dates'), {'fields': ('last_login',)}),
-#     )
-#     add_fieldsets = (
-#         (None, {
-#             'classes': ('wide',),
-#             'fields': ('name', 'email', 'password','groups')
 
-#         }),
-#         (_('Personal Info'), {'fields': ('name', 'mobile')}),
-#         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')})
-#     )
-
+admin.site.register(CustomUser, UserAdmin)
 
 
 class PermissionResource(resources.ModelResource):

@@ -87,9 +87,9 @@ DATABASES = {
 
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'iubhelpdesk',
-        'USER': 'mahbub',
-        'PASSWORD': '@Pass0918',
+        'NAME': 'education_assistant',
+        'USER': 'root',
+        'PASSWORD': '1.Password?',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     },

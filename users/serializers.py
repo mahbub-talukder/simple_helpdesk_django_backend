@@ -36,14 +36,16 @@ def match_not_found():
 
 def validate_password(password, confirm_password):
     if password == confirm_password:
-        if re.match(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", password):
-            return make_password(password)
-        else:
-            msg = {
-                "error": "Password must be a minimum of eight characters with at least one uppercase letter, "
-                         "one lowercase letter, one digit and one special character. "
-            }
-            raise ValidationError(detail=msg)
+        return make_password(password)
+
+        # if re.match(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", password):
+        #     return make_password(password)
+        # else:
+        #     msg = {
+        #         "error": "Password must be a minimum of eight characters with at least one uppercase letter, "
+        #                  "one lowercase letter, one digit and one special character. "
+        #     }
+        #     raise ValidationError(detail=msg)
     else:
         match_not_found()
 
@@ -63,7 +65,6 @@ class SignUpSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255, required=True)
     email = serializers.EmailField(max_length=255, required=True)
     mobile = serializers.CharField(max_length=255, required=True)
-    mobile = serializers.CharField(max_length=255, required=True)
     password = serializers.CharField(max_length=255, required=True)
     confirm_password = serializers.CharField(max_length=255, required=True)
     role = serializers.CharField(max_length=255, required=True)
@@ -71,15 +72,16 @@ class SignUpSerializer(serializers.Serializer):
     @staticmethod
     def create(validated_data):
         name = validated_data['name']
-        valid_mobile = validate_mobile(validated_data['mobile'])
+        # valid_mobile = validate_mobile(validated_data['mobile'])
         valid_email = validate_email(validated_data['email'])
-        valid_role = validate_role(validated_data['role'])
+        # valid_role = validate_role(validated_data['role'])
+        valid_role = validated_data['role']
         valid_password = validate_password(validated_data['password'], validated_data['confirm_password'])
 
         user = CustomUser.objects.create(
             name = name,
             email = valid_email,
-            mobile = valid_mobile,
+            # mobile = validated_data['mobile'],
             password = valid_password,
             user_type = valid_role,
             is_admin =  True if valid_role == 'admin' else False,
@@ -247,6 +249,12 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class RoleSerializer(serializers.ModelSerializer):
+
+    permissions = serializers.SerializerMethodField()
+
+    def get_permissions(self,obj):
+        return list(obj.permissions.filter(content_type__model='permission').values_list('codename',flat=True))
     class Meta:
         model = Group
         fields = '__all__'
+        depth = 2

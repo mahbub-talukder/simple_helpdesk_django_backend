@@ -14,8 +14,9 @@ RESOLVE_CHOICE = (
 
 USER_TYPE_CHOICE = (
     ('admin','Admin'),
-    ('employee','Employee'),
     ('student','Student'),
-    ('admission_officer','Admission Officer'),
-    ('register_offier','Register Offier'),
+    ('teacher','Teacher'),
+    ('operator','Operator'),
+    ('individual','Individual'),
+    
 )
